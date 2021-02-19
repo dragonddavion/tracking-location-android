@@ -1,9 +1,12 @@
-package com.davion.jetpack.mygps
+package com.davion.jetpack.mygps.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import com.davion.jetpack.mygps.LocationWorker
+import com.davion.jetpack.mygps.util.Preference
+import com.davion.jetpack.mygps.util.PreferenceKey
 
-class LocationViewModel(application: Application) : AndroidViewModel(application) {
+class HomeViewModel(application: Application) : AndroidViewModel(application){
     fun setTime(time: Long) {
         Preference.setString(PreferenceKey.STORE_TIME_DELAY, time.toString())
     }

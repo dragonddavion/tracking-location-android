@@ -1,4 +1,4 @@
-package com.davion.jetpack.mygps
+package com.davion.jetpack.mygps.ui.activity
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -6,57 +6,35 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import kotlinx.android.synthetic.main.activity_main.*
+import com.davion.jetpack.mygps.R
+import com.davion.jetpack.mygps.util.IActivityConnector
 
 private const val PERMISSION_ID = 1
 
-class MainActivity : AppCompatActivity() {
-    private val viewModel by viewModels<LocationViewModel>()
-
+class MainActivity : AppCompatActivity(), IActivityConnector {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        setTime.setOnClickListener {
-            val time = timeDelay.text.toString()
-            Log.d("Davion", "time delay: $time")
-            viewModel.setTime(time.toLong())
-        }
-
-        getLocation.setOnClickListener {
-            runWorker()
-        }
-
-        cancelButton.setOnClickListener {
-            viewModel.cancelWorker()
-        }
-    }
-
-    private fun runWorker() {
-        if (checkPermission()) {
-            if (isLocationEnabled()) {
-                viewModel.runWorker()
-            }
-            else {
-                Toast.makeText(this, "Please Turn on Your device Location", Toast.LENGTH_SHORT).show()
-            }
-        } else {
-            requestPermission()
-        }
     }
 
     /**
      * @return true if we have permission
      * @return false if not
      * */
-    private fun checkPermission(): Boolean {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            return true
+    override fun checkPermission(): Boolean {
+        return if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (isLocationEnabled()) {
+                true
+            } else {
+                Toast.makeText(this, "Please Turn on Your device Location", Toast.LENGTH_SHORT).show()
+                false
+            }
+        } else {
+            requestPermission()
+            false
         }
-        return false
     }
 
     private fun requestPermission() {
@@ -67,7 +45,6 @@ class MainActivity : AppCompatActivity() {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
-
 
     override fun onRequestPermissionsResult(
             requestCode: Int,

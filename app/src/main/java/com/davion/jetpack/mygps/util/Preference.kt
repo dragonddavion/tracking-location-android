@@ -1,4 +1,4 @@
-package com.davion.jetpack.mygps
+package com.davion.jetpack.mygps.util
 
 import android.content.Context
 import android.content.SharedPreferences

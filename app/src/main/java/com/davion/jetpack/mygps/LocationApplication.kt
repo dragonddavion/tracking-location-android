@@ -1,6 +1,7 @@
 package com.davion.jetpack.mygps
 
 import android.app.Application
+import com.davion.jetpack.mygps.util.Preference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
