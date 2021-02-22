@@ -10,9 +10,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.davion.jetpack.mygps.R
 import com.davion.jetpack.mygps.util.IActivityConnector
+import com.davion.jetpack.mygps.util.getCurrentDate
 import com.davion.jetpack.mygps.viewmodel.HomeViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_home.*
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
     private val viewModel by viewModels<HomeViewModel>()
     private lateinit var activityConnector: IActivityConnector
@@ -42,6 +45,7 @@ class HomeFragment : Fragment() {
             val time = timeDelay.text.toString()
             Log.d("Davion", "time delay: $time")
             viewModel.setTime(time.toLong())
+            textView.text = getCurrentDate()
         }
 
         getLocation.setOnClickListener {

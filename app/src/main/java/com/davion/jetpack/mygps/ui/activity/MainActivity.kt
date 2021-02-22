@@ -10,9 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.davion.jetpack.mygps.R
 import com.davion.jetpack.mygps.util.IActivityConnector
+import dagger.hilt.android.AndroidEntryPoint
 
 private const val PERMISSION_ID = 1
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), IActivityConnector {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

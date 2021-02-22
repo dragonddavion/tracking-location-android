@@ -62,4 +62,14 @@
         app:layout_constraintBottom_toBottomOf="@+id/getLocation"
         app:layout_constraintStart_toEndOf="@+id/getLocation"
         app:layout_constraintTop_toTopOf="@+id/getLocation" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="@string/tracking_list_button_text"
+        app:layout_constraintBottom_toBottomOf="@+id/cancelButton"
+        app:layout_constraintStart_toEndOf="@+id/cancelButton"
+        app:layout_constraintTop_toTopOf="@+id/cancelButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>

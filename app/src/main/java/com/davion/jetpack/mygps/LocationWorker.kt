@@ -6,15 +6,25 @@ import android.location.Geocoder
 import android.location.Location
 import android.util.Log
 import androidx.core.app.ActivityCompat
+import androidx.hilt.work.HiltWorker
 import androidx.work.*
+import com.davion.jetpack.mygps.util.getDelayTime
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.coroutineScope
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class LocationWorker(appContext: Context, workerParams: WorkerParameters) : CoroutineWorker(appContext, workerParams) {
+@HiltWorker
+class LocationWorker @AssistedInject constructor(
+    @Assisted appContext: Context,
+    @Assisted workerParams: WorkerParameters,
+    private val repository: LocationTrackingRepository
+) : CoroutineWorker(appContext, workerParams) {
+
     private val fusedLocationProviderClient: FusedLocationProviderClient by lazy {
         LocationServices.getFusedLocationProviderClient(appContext)
     }
@@ -22,7 +32,8 @@ class LocationWorker(appContext: Context, workerParams: WorkerParameters) : Coro
     companion object {
         private const val POST_LOCATION_WORK_NAME = "location"
 
-        fun runAt(context: Context) {
+        fun runAt(context: Context, repository: LocationTrackingRepository) {
+            Log.d("Davion", "repository: " + repository)
             val workManager = WorkManager.getInstance(context)
 
             val delayTime = getDelayTime()
@@ -31,7 +42,11 @@ class LocationWorker(appContext: Context, workerParams: WorkerParameters) : Coro
                 .setInitialDelay(delayTime, TimeUnit.SECONDS)
                 .build()
 
-            workManager.enqueueUniqueWork(POST_LOCATION_WORK_NAME, ExistingWorkPolicy.REPLACE, workRequest)
+            workManager.enqueueUniqueWork(
+                POST_LOCATION_WORK_NAME,
+                ExistingWorkPolicy.REPLACE,
+                workRequest
+            )
         }
 
         fun cancel(context: Context) {
@@ -56,7 +71,7 @@ class LocationWorker(appContext: Context, workerParams: WorkerParameters) : Coro
         } finally {
             Log.d("Davion", "run continue")
             if (checkPermission()) {
-                runAt(context)
+                runAt(context, repository = repository)
             }
         }
     }
@@ -83,7 +98,14 @@ class LocationWorker(appContext: Context, workerParams: WorkerParameters) : Coro
      * @return false if not
      * */
     private fun checkPermission(): Boolean {
-        if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                applicationContext,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+                applicationContext,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             return true
         }
         return false
